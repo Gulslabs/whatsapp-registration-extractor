@@ -1,5 +1,7 @@
 # WhatsApp to CSV Generator 
-We have a whatsapp group for class registration. All message for registration follow a particular format(`sample below`). We need to extract all the fields from every such message and push them as rows on a final csv file(`sample below`)
+- All registrations are pushed to a Whatsapp group.
+- All message of registration follow a particular format(`sample below`).
+- *Problem Statement*: Extract registration form messages; then extract all the fields from every such message and push them as rows on a csv file(`sample below`)
 ### Prerequisite:
 - Step 0: Installations
     - Install pandas `pip install pandas`
@@ -15,7 +17,7 @@ We have a whatsapp group for class registration. All message for registration fo
     -Run `python.exe WhtAppTxt-To-RegFrm-Extractor.py`. Update the source file reference as required. This will generate `KARMH-B02_Registrations.txt`. Replace all `*KARMH-B02 STUDENT DETAILS*` with `KARMH-B02 STUDENT DETAILS`
     - Run `python.exe RegFrm-To-Csv-Convertor.py`. Update the source file reference as required. This will generate `KARMH-B02_Registrations.csv`. The generated csv file will have some analomolies. 
     - Finally run `python.exe RegFrm-Csv-Cleansing.py`; this will cleans empty rows, remove phone number and other anamolies
-### Format:
+### Formats:
 
 ```
 =====================
@@ -50,4 +52,8 @@ Mobile# :
 Student ID# : 
 Batch# : 
 =====================
+```
+```
+Full Name,Mobile#,WhatsApp#,Gender,HOMETOWN DETAILS - Area/Locality,HOMETOWN DETAILS - City,HOMETOWN DETAILS - District,HOMETOWN DETAILS - State,CURRENT RESIDENCE - Area/Locality,CURRENT RESIDENCE - City,CURRENT RESIDENCE - District,CURRENT RESIDENCE - State,OTHER DETAILS - Age,OTHER DETAILS - Qualification,OTHER DETAILS - Profession,OTHER DETAILS - Email,REFERRED By - Full Name,REFERRED By - Mobile#,REFERRED By - Student ID#,REFERRED By - Batch#,REFERRED By - Mobile,REFERRED By - Student ID,REFERRED By - Batch
+Syed Thaseemuddin,1234567890,1234567890,M,Kirmani Colony,Bidar,Bidar,Karnataka,HSR Layout,Bengaluru,Bengaluru,Karnataka,42,"M.S,  B.E",Engineering Manager,st@gmail.com,GA,1234567890,259_Ahsan,NB-02
 ```
