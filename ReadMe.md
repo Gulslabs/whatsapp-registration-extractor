@@ -17,7 +17,7 @@
         - Replace all `Email Address`, `EmailAddress` with `Email`
         - Replace all `REFFERRED` with `REFERRED`
 - Step 3: Execution
-    -Run `python.exe WhtAppTxt-To-RegFrm-Extractor.py`. Update the source file reference as required. This will generate `KARMH-B02_Registrations.txt`. Replace all `*KARMH-B02 STUDENT DETAILS*` with `KARMH-B02 STUDENT DETAILS`
+    - Run `python.exe WhtAppTxt-To-RegFrm-Extractor.py`. Update the source file reference as required. This will generate `KARMH-B02_Registrations.txt`. Replace all `*KARMH-B02 STUDENT DETAILS*` with `KARMH-B02 STUDENT DETAILS`
     - Run `python.exe RegFrm-To-Csv-Convertor.py`. Update the source file reference as required. This will generate `KARMH-B02_Registrations.csv`. The generated csv file will have some analomolies. 
     - Finally run `python.exe RegFrm-Csv-Cleansing.py`; this will cleans empty rows, remove phone number and other anamolies
 ### Formats:
