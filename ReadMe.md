@@ -1,7 +1,7 @@
 # WhatsApp to CSV Generator 
 - All registrations are pushed to a Whatsapp group.
 - All message of registration follow a particular format(`sample below`).
-- *Problem Statement*: Extract registration form messages; then extract all the fields from every such message and push them as rows on a csv file(`sample below`)
+- *Problem Statement*: Extract registration messages; then extract all the fields from every such message and push it as rows on a csv file(`sample below`)
 ### Prerequisite:
 - Step 0: Installations
     - Install pandas `pip install pandas`
