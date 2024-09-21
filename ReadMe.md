@@ -3,9 +3,10 @@
 - All message of registration follow a particular format(`sample below`).
 - *Problem Statement*: Extract registration messages; then extract all the fields from every such message and push it as rows on a csv file(`sample below`)
 ### Prerequisite:
-- Step 0: Installations
-    - Install pandas `pip install pandas`
+- Step 0: Installations    
     - Virtual Environment for Python in VSCode https://code.visualstudio.com/docs/python/environments
+    - Install pandas `pip install pandas`
+      
 ### How to Run:
 - Step 1: Download the chats
     -Select the class registration group you want to export messages from; tap three dots(...) on top right corner; go to more and "Export Chat". Choose *Not to include media*
