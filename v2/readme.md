@@ -27,15 +27,6 @@
 | Batch, Batch# | Batch# |
 | Gender | ❌ Remove |
 
-#### Convert the following fields (and their _2 counterparts, if any) to Camel Case:
-
-- Full Name
-- City
-- Area/Locality
-- District
-- State
-- Mandal
-- Profession
 
 #### Middle East and Gulf Country Calling Codes Removed. 
 
