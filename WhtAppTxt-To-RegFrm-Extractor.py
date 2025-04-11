@@ -1,65 +1,82 @@
-def extract_student_details(file_path, output_file_path):
-    with open(file_path, 'r', encoding='UTF-8') as file:
-        data = file.readlines()
+import csv
+import re
 
-    extracted_sections = []
-    inside_section = False
-    gulam_ahsan = False
-    section = []
+# Constants
+INPUT_FILE = 'whatsapp_students_registration.txt'
+OUTPUT_FILE = 'whatsapp_students_registration.csv'
 
-    for i, line in enumerate(data):                
-        # Look for the start pattern and begin capturing
-        if '*KARMH-B02 STUDENT DETAILS*' in line or 'KARMH-B02 STUDENT DETAILS' in line:            
-            if i + 1 < len(data) and ('=====================' in data[i + 1] or '====================' in data[i + 1]):
-                inside_section = True
-                section.append(line)  # Include the start line                
+# Ordered list of fields based on the given format (including duplicates)
+COLUMNS = [
+    'Full Name', 'Mobile#', 'WhatsApp#',
+    'Area/Locality', 'City', 'District', 'State',
+    'Area/Locality', 'Mandal', 'City', 'State',
+    'Age', 'Qualification', 'Profession', 'Email Address',
+    'Full Name', 'Mobile#', 'Student ID#', 'Batch#'
+]
+
+SEPARATOR_REGEX = r'[\-=]{2,}|[\-=:]{1,}'  # Decorative separators
+FIELD_REGEX = re.compile(r'^(.*?)(?:\s*[:=\-]+\s*)(.*)$')  # Flexible key-value match
+WHATSAPP_MSG_REGEX = re.compile(r"^\[\d{1,2}:\d{2}, \d{1,2}/\d{1,2}/\d{4}\] \+?\d{1,15}: ")
+
+def clean_value(value):
+    """Cleans values by trimming and removing +91 from phone numbers."""
+    value = value.strip()
+    if value.startswith('+91'):
+        value = value[3:]
+    return value
+
+def parse_registration_entries(text):
+    """Parses all registration blocks into a list of dictionaries with fixed column order."""
+    entries = [entry.strip() for entry in text.split("TSAP-B02 STUDENT DETAILS") if entry.strip()]
+    parsed_data = []
+
+    for entry in entries:
+        values = []
+        for line in entry.splitlines():
+            line = line.strip()
+
+            if not line or re.fullmatch(SEPARATOR_REGEX, line) or WHATSAPP_MSG_REGEX.match(line):
                 continue
 
-        # Continue capturing until the next '====================='
-        if inside_section:            
-            section.append(line)
-            if '=====================' in line and len(section) > 2:  # Ensure it's the second separator                
-                extracted_sections.append(''.join(section))
-                section = []
-                inside_section = False
+            match = FIELD_REGEX.match(line)
+            if match:
+                key = match.group(1).strip()
+                value = clean_value(match.group(2))
+                values.append((key, value))
 
-    # Save the extracted sections to a new file
-    with open(output_file_path, 'w') as output_file:
-        for section in extracted_sections:
-            output_file.write(section)
-            output_file.write("\n")  # Add a new line between sections
+        # Flatten into a dictionary using COLUMNS
+        registration = {}
+        col_idx = 0
+        for key, value in values:
+            if col_idx < len(COLUMNS):
+                registration[COLUMNS[col_idx]] = value
+                col_idx += 1
+        # Fill missing fields with empty string
+        for col in COLUMNS:
+            registration.setdefault(col, '')
+        parsed_data.append(registration)
 
-    print(f"Extracted data saved to {output_file_path}")
+    return parsed_data
 
+def write_to_csv(data, output_file):
+    """Writes the data into a CSV file with original field names and order."""
+    if not data:
+        print("No data to write.")
+        return
 
-def clean_student_details(output_file_path):
-    with open(output_file_path, 'r') as file:
-        lines = file.readlines()
+    with open(output_file, mode='w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=COLUMNS)
+        writer.writeheader()
+        for row in data:
+            writer.writerow(row)
 
-    cleaned_lines = []
-    
-    for line in lines:
-        # If the line contains the target pattern, strip off anything before it
-        if '*KARMH-B02 STUDENT DETAILS*' in line:
-            index = line.find('*KARMH-B02 STUDENT DETAILS*')
-            cleaned_lines.append(line[index:])  # Keep only the relevant part        
-        elif 'KARMH-B02 STUDENT DETAILS' in line:            
-            index = line.find('KARMH-B02 STUDENT DETAILS')
-            cleaned_lines.append(line[index:])  # Keep only the relevant part        
-        else:
-            cleaned_lines.append(line)  # If the line doesn't need cleaning, just append it
+def main():
+    with open(INPUT_FILE, encoding='utf-8') as f:
+        text = f.read()
 
-    # Overwrite the original output file with the cleaned data
-    with open(output_file_path, 'w') as file:
-        file.writelines(cleaned_lines)
+    parsed_data = parse_registration_entries(text)
+    write_to_csv(parsed_data, OUTPUT_FILE)
+    print(f"✅ Parsed {len(parsed_data)} entries and wrote to '{OUTPUT_FILE}'")
 
-    print(f"Cleaned data saved to {output_file_path}")
-
-# Example usage
-input_file_path = 'WhatsApp Chat with KARMH-B02 Registrations.txt'  # Replace with the path to your input file
-#input_file_path = 'dummy.txt'
-output_file_path = 'KARMH-B02_Registrations.txt'  # Replace with the desired output file path
-
-extract_student_details(input_file_path, output_file_path)
-# Step 2: Clean the extracted file by removing unwanted parts
-clean_student_details(output_file_path)
+if __name__ == '__main__':
+    main()
