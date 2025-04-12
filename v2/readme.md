@@ -8,7 +8,7 @@
 - **Example:**  `"  Syed Rahman  "` → `"Syed Rahman"`
 ##### 2. **Mobile Number Cleanup**
 - **Applicable Fields:**  `Mobile#`, `Mobile#_2`, `WhatsApp#`. **Example:**  `"+91 90639 13264"` → `"9063913264"`
-- **Strips leading country codes:**`+91`, `91` (India),  `+966`, `966` (Saudi Arabia), Case-insensitive and works with or without the `+` symbol. **Examples:** `"91 81234 56789"` → `"8123456789"` `"+966543219876"` → `"543219876"`
+- **Strips leading country codes:**`+91`, `91` (India),  `+966`, `966` (Saudi Arabia), `+1`, `1`(USA) Case-insensitive and works with or without the `+` symbol. **Examples:** `"91 81234 56789"` → `"8123456789"` `"+966543219876"` → `"543219876"`
 ##### 3. **Camel Casing**
 - **Applicable Fields:**  `Full Name`, `City`, `Area/Locality`, `District`, `State`, `Mandal`, `Profession` 
 *(Includes `_2` variants like `City_2`, `Full Name_2`, etc.)*  **Example:**  
