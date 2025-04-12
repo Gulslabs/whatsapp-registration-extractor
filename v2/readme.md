@@ -18,7 +18,6 @@
 
 ##### 5. **Normalized**  
 - Field names are **normalized** before checking against formatting rules (e.g., `"mobile"` is treated as `"Mobile#"`).
-- The function is **non-destructive** for unlisted fields — no formatting is applied unless the field is explicitly configured.
 
 #### Field Lable Mapping
 
