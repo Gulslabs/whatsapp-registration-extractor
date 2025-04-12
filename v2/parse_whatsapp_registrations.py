@@ -33,7 +33,7 @@ output_headers = [
 # Fields for formatting
 camel_case_fields = {'Full Name', 'City', 'Area/Locality', 'District', 'State', 'Mandal', 'Profession'}
 uppercase_fields = {'Student ID#', 'Batch#'}
-
+number_fields = {'Mobile#', 'WhatsApp#', 'Mobile#_2'}
 def to_camel_case(text):
     return ' '.join(word.capitalize() for word in text.split())
 
@@ -43,10 +43,10 @@ def normalize_fieldname(field):
 def clean_value(field, value):
     value = value.strip()
     norm_field = normalize_fieldname(field)
-    if norm_field in {'Mobile#', 'Mobile#_2', 'WhatsApp#'}:
+    if norm_field in number_fields:
         # Remove spaces and country codes like +91, 91, +966, 966
         value = re.sub(r'\s+', '', value)
-        value = re.sub(r'^\+?(91|966)', '', value)
+        value = re.sub(r'^\+?(91|966|1)', '', value)
 
     if norm_field in camel_case_fields:
         return to_camel_case(value)
