@@ -1,6 +1,6 @@
 
 ### How to Run: 
-- Copy Registrations to  `whatsapp_students_registration.txt`[Replace 'Gulam Ahsan' with '+91 9980700122']
+- Copy Registrations to  `whatsapp_students_registration.txt`[Replace `Gulam Ahsan` with `+91 9980700122`]
 - cd `D:\Work\py-ws\whatsapp-registration-extractor\v2` then Run `python .\parse_whatsapp_registrations.py`
 - Open `parsed_students.csv` and edit as requird. 
 #### Cleaning Values: 
