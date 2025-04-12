@@ -29,28 +29,3 @@
 | Student ID, Student ID# | Student ID# |
 | Batch, Batch# | Batch# |
 | Gender | ❌ Remove |
-
-
-#### Middle East and Gulf Country Calling Codes Removed. 
-
-| Country | Country Code |
-|---------|-------------|
-| **Gulf Cooperation Council (GCC) Countries** ||
-| India | +91 |
-| Saudi Arabia | +966 |
-| United Arab Emirates | +971 |
-| Qatar | +974 |
-| Kuwait | +965 |
-| Bahrain | +973 |
-| Oman | +968 |
-| **Other Middle Eastern Countries** ||
-| Egypt | +20 |
-| Iran | +98 |
-| Iraq | +964 |
-| Israel | +972 |
-| Jordan | +962 |
-| Lebanon | +961 |
-| Palestine | +970 |
-| Syria | +963 |
-| Turkey | +90 |
-| Yemen | +967 |
