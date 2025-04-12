@@ -1,4 +1,4 @@
-# WhatsApp to CSV Generator 
+# WhatsApp to CSV Generator - Laborious Obsolete - REFER V2
 - All registrations are pushed to a Whatsapp group.
 - All message of registration follow a particular format(`sample below`).
 - *Problem Statement*: Extract registration messages; then extract all the fields from every such message and push it as rows on a csv file(`sample below`)
