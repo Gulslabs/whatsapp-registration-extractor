@@ -23,6 +23,7 @@ def send_messages(driver, contacts, message_template):
     for contact in contacts:
         number = contact['number']
         name = contact['name']
+        # Can get more dynamic  message = message_template.format(name=name, city=city, day=day)
         message = message_template.format(name=name)
         print(f"Sending to {name} ({number})...")
         try:
