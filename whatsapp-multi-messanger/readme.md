@@ -27,7 +27,7 @@ pip install -r requirements.txt
 ```
 ## Prepare Your Files
 ### contacts.csv
-- Note: Use full mobile numbers with country code (without spaces, dashes, or plus sign).
+Note: Use full mobile numbers with country code (without spaces, dashes, or plus sign).
 
     ```
     number,name
