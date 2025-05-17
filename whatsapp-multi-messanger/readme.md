@@ -20,12 +20,12 @@ This project allows you to automatically send personalized WhatsApp messages to 
 ```bash 
 python -m ensurepip --upgrade
 ```
-### 3. Install Required Python Packages
+### 3. Download this code 
+- cd into `whatsapp-multi-messanger` folder
+### 4. Install Required Python Packages
 ```bash 
 pip install -r requirements.txt
 ```
-### 4. Download this code 
-- cd into `whatsapp-multi-messanger` folder
 ## Prepare Your Files
 ### contacts.csv
 Note: Use full mobile numbers with country code (without spaces, dashes, or plus sign).
