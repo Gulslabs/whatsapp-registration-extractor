@@ -9,7 +9,6 @@ This project allows you to automatically send personalized WhatsApp messages to 
 ### 1. Install Python
 - Download and install Python from: https://www.python.org/downloads/
 - During installation, make sure to check **"Add Python to PATH"** option.
-
 ---
 
 ### 2. Install pip (if not already installed)
@@ -25,6 +24,8 @@ python -m ensurepip --upgrade
 ```bash 
 pip install -r requirements.txt
 ```
+### 4. Download this code 
+- cd into `whatsapp-multi-messanger` folder
 ## Prepare Your Files
 ### contacts.csv
 Note: Use full mobile numbers with country code (without spaces, dashes, or plus sign).
