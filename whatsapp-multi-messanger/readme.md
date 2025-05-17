@@ -53,6 +53,6 @@ python send_whatsapp_messages_with_selenium.py
 ## Important Notes
 - Keep your phone connected to the internet throughout the process.
 - Do not close the Chrome window during message sending.
-- It's recommended not to send too many messages at once to avoid temporary blocks from WhatsApp.
+- It's recommended not to send too many messages at once to avoid Whatapps(Meta) blocking your number.
 
 
