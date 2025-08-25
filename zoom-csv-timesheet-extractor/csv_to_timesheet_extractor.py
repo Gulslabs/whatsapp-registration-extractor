@@ -1,11 +1,15 @@
 import pandas as pd
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
+from openpyxl.styles import PatternFill, Font
+
 
 # Global Configuration
-ENABLE_DURATION_THRESHOLD = True  # Set to True to enable duration threshold splitting
+ENABLE_DURATION_THRESHOLD = False  # Set to True to enable duration threshold splitting
 DURATION_THRESHOLD = 20  # Minimum duration to stay in main sheet
+START_TIME_THRESHOLD_MINUTES = 15  # Minutes after start time to mark as late_joiner
+END_TIME_THRESHOLD_MINUTES = 5    # Minutes before end time to mark as early_leaver
 
 def process_name(name):
     """Process the name according to the specified rules"""
@@ -114,9 +118,6 @@ def split_data_by_duration_threshold(participants_data, duration_threshold=20):
     
     return main_sheet_data, below_threshold_data
 
-
-
-
 def load_naqeeb_mapping(naqeeb_file_path='naqeeb_to_initial.csv'):
     """
     Load Naqeeb mapping from CSV file
@@ -182,8 +183,7 @@ def consolidate_duplicate_participants(participants_data):
     
     Returns:
     list: Consolidated list with merged sessions for duplicate participants
-    """
-    from datetime import datetime
+    """   
     
     consolidated = {}
     
@@ -246,6 +246,126 @@ def consolidate_duplicate_participants(participants_data):
     print(f"Consolidated {len(participants_data)} records into {len(result)} unique participants")
     return result
 
+def convert_to_24hour_time(datetime_str):
+    """
+    Convert datetime string to 24-hour time format (HH:MM)
+    
+    Parameters:
+    datetime_str (str): DateTime string like '8/23/2025 07:35:40 PM'
+    
+    Returns:
+    str: Time in 24-hour format like '19:35' or original string if conversion fails
+    """
+    if not datetime_str or pd.isna(datetime_str):
+        return ''
+    
+    try:
+        # Parse the datetime string
+        dt = datetime.strptime(str(datetime_str), '%m/%d/%Y %I:%M:%S %p')
+        # Return only time in 24-hour format (HH:MM)
+        return dt.strftime('%H:%M')
+    except:
+        # If parsing fails, return original string
+        return str(datetime_str)
+
+def set_attendance_remarks(participants_data, session_start_time, session_end_time):
+    """
+    Set remarks based on join/leave time thresholds
+    
+    Parameters:
+    participants_data (list): List of participant dictionaries
+    session_start_time (str): Session start time in HH:MM format
+    session_end_time (str): Session end time in HH:MM format
+    
+    Returns:
+    list: Updated participants data with remarks
+    """   
+    
+    try:
+        # Parse session times
+        start_time = datetime.strptime(session_start_time, '%H:%M')
+        end_time = datetime.strptime(session_end_time, '%H:%M')
+        
+        # Calculate threshold times
+        late_threshold = start_time + timedelta(minutes=START_TIME_THRESHOLD_MINUTES)
+        early_threshold = end_time - timedelta(minutes=END_TIME_THRESHOLD_MINUTES)
+        
+        for participant in participants_data:
+            remarks = []
+                        
+            try:
+                # Parse participant times
+                join_time = datetime.strptime(participant['Join Time'], '%H:%M')
+                leave_time = datetime.strptime(participant['Leave Time'], '%H:%M')
+                
+                # Check if late joiner
+                if join_time >= late_threshold:
+                    remarks.append('Late Joiner')
+                
+                # Check if early leaver
+                if leave_time <= early_threshold:
+                    remarks.append('Early Leaver')
+                
+                # Set remarks
+                participant['Remarks'] = ', '.join(remarks)
+                
+            except (ValueError, TypeError):
+                # If time parsing fails, skip this participant
+                continue
+                
+    except (ValueError, TypeError):
+        print(f"Warning: Could not parse session times '{session_start_time}' or '{session_end_time}'")
+        return participants_data
+    
+    return participants_data
+
+def apply_conditional_formatting(workbook, worksheet, participants_data, start_row=4):
+    """
+    Apply conditional formatting based on remarks
+    
+    Parameters:
+    workbook: Excel workbook object
+    worksheet: Excel worksheet object
+    participants_data (list): List of participant dictionaries
+    start_row (int): Starting row number for participant data
+    """    
+    
+    # Define fill patterns and fonts
+    amber_fill = PatternFill(start_color="FFC000", end_color="FFC000", fill_type="solid")  # Amber
+    red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")    # Red
+    black_font = Font(color="000000")  # Black text
+    white_font = Font(color="FFFFFF")  # White text
+    
+    for idx, participant in enumerate(participants_data):
+        row_num = start_row + idx
+        remarks = participant.get('Remarks', '')
+        
+        if not remarks:
+            continue
+            
+        # Check if both conditions are present
+        if 'Late Joiner' in remarks and 'Early Leaver' in remarks:
+            # Red background, white text for both Join Time (B) and Leave Time (C)
+            join_cell = worksheet.cell(row=row_num, column=2)  # Column B - Join Time
+            leave_cell = worksheet.cell(row=row_num, column=3)  # Column C - Leave Time
+            
+            join_cell.fill = red_fill
+            join_cell.font = white_font
+            leave_cell.fill = red_fill
+            leave_cell.font = white_font
+            
+        else:
+            # Individual conditions - amber background, black text
+            if 'Late Joiner' in remarks:
+                join_cell = worksheet.cell(row=row_num, column=2)  # Column B - Join Time
+                join_cell.fill = amber_fill
+                join_cell.font = black_font
+                
+            if 'Early Leaver' in remarks:
+                leave_cell = worksheet.cell(row=row_num, column=3)  # Column C - Leave Time
+                leave_cell.fill = amber_fill
+                leave_cell.font = black_font
+
 def convert_zoom_csv_to_timesheet(csv_file_path, start_time, end_time):
     """
     Convert Zoom CSV to Excel timesheet
@@ -305,8 +425,9 @@ def convert_zoom_csv_to_timesheet(csv_file_path, start_time, end_time):
             processed_name = process_name(name)
             
             # Get Naqeeb name based on original name
-            naqeeb_name = get_naqeeb_name(name, naqeeb_mapping)
-
+            naqeeb_name = get_naqeeb_name(name, naqeeb_mapping)            
+            
+            
             participants_data.append({
                 'Name': processed_name,
                 'Join Time': join_time,
@@ -319,6 +440,14 @@ def convert_zoom_csv_to_timesheet(csv_file_path, start_time, end_time):
         # Consolidate duplicate participants
         participants_data = consolidate_duplicate_participants(participants_data)
         # Apply duration threshold splitting if enabled
+        # Convert times to 24-hour format AFTER consolidation
+        for participant in participants_data:
+            participant['Join Time'] = convert_to_24hour_time(participant['Join Time'])
+            participant['Leave Time'] = convert_to_24hour_time(participant['Leave Time'])
+        
+        participants_data = set_attendance_remarks(participants_data, start_time, end_time)        
+       
+
         if ENABLE_DURATION_THRESHOLD:
             main_sheet_data, below_threshold_data = split_data_by_duration_threshold(participants_data, DURATION_THRESHOLD)
             participants_df = pd.DataFrame(main_sheet_data)
@@ -330,11 +459,11 @@ def convert_zoom_csv_to_timesheet(csv_file_path, start_time, end_time):
         # Create Excel file
         with pd.ExcelWriter(filename, engine='openpyxl') as writer:
             # Write participant data starting from row 3 (to leave space for header info)
-            participants_df.to_excel(writer, sheet_name='Time_Sheet', index=False, header=True, startrow=2)
+            participants_df.to_excel(writer, sheet_name='Above_20_Minutes', index=False, header=True, startrow=2)
             
             # Get the workbook and worksheet to manually add header info
             workbook = writer.book
-            worksheet = writer.sheets['Time_Sheet']
+            worksheet = writer.sheets['Above_20_Minutes']
             
             # Write header information in row 1
             worksheet['A1'] = 'Date'
@@ -343,6 +472,8 @@ def convert_zoom_csv_to_timesheet(csv_file_path, start_time, end_time):
             worksheet['D1'] = start_time
             worksheet['E1'] = 'End Time'
             worksheet['F1'] = end_time
+            # Apply conditional formatting
+            apply_conditional_formatting(workbook, worksheet, participants_df.to_dict('records'))
             
             # Write below threshold data to Sheet2 if enabled and data exists
             if ENABLE_DURATION_THRESHOLD and below_threshold_df is not None and len(below_threshold_df) > 0:
@@ -356,6 +487,7 @@ def convert_zoom_csv_to_timesheet(csv_file_path, start_time, end_time):
                 worksheet2['D1'] = start_time
                 worksheet2['E1'] = 'End Time'
                 worksheet2['F1'] = end_time
+                apply_conditional_formatting(workbook, worksheet2, below_threshold_df.to_dict('records'))
         
         if ENABLE_DURATION_THRESHOLD:
             print(f"Successfully created timesheet: {filename}")
