@@ -116,7 +116,7 @@ Row 4+: [Participant Data]
 
 ## Sample Output
 ```
-Name (original name)    Join Time  Leave Time  Duration  Naqeeb Name    Remarks
+Name                    Join Time  Leave Time  Duration  Naqeeb Name    Remarks
 SR_Samir Shaikh(Naqeeb) 19:35      22:32       177      Samir Shaikh   
 RT_Participant Name     20:50      22:55       125      Rais Tigadi    Late Joiner
 AZ_Another Person       19:30      22:50       200      Ayyaz Sayyed   Early Leaver
